@@ -2,18 +2,18 @@ import { HTTP_STATUS_CODE, ResponseType } from "@/lib/types/apiResponse";
 
 import { ServerResponseBuilder } from "@/lib/builders/serverResponseBuilder";
 import { InputException } from "@/lib/errors/inputExceptions";
-import { addItem, getItems } from "@/server/request";
+import { addItem, editItem, getItems } from "@/server/request";
 
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  // const status: string | null = url.searchParams.get("status");
-  const page = parseInt(url.searchParams.get("page") || "1");
-  try {
-    const items = await getItems(page);
-    return new Response(JSON.stringify(items), {
-      status: HTTP_STATUS_CODE.OK,
-      headers: { "Content-Type": "application/json" },
-    });
+    const url = new URL(request.url);
+    const status: string | null = url.searchParams.get("status");
+    const page = parseInt(url.searchParams.get("page") || "1");
+    try {
+        const items = await getItems(status, page);
+        return new Response(JSON.stringify(items), {
+            status: HTTP_STATUS_CODE.OK,
+            headers: { "Content-Type": "application/json" },
+        });
   } catch (e) {
     if (e instanceof InputException) {
       return new ServerResponseBuilder(ResponseType.INVALID_INPUT).build();
@@ -31,6 +31,22 @@ export async function PUT(request: Request) {
             headers: { "Content-Type": "application/json" },
         });
     } catch (e) {
+    if (e instanceof InputException) {
+      return new ServerResponseBuilder(ResponseType.INVALID_INPUT).build();
+    }
+    return new ServerResponseBuilder(ResponseType.UNKNOWN_ERROR).build();
+  }
+}
+
+export async function PATCH(request: Request) {
+    try {
+        const req = await request.json();
+        const editedItem = editItem(req);
+        return new Response(JSON.stringify(editedItem), {
+            status: HTTP_STATUS_CODE.OK,
+            headers: { "Content-Type": "application/json" },
+        });
+  } catch (e) {
     if (e instanceof InputException) {
       return new ServerResponseBuilder(ResponseType.INVALID_INPUT).build();
     }
