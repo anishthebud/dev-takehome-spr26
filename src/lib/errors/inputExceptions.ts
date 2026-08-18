@@ -25,3 +25,12 @@ export class InvalidPaginationError extends InputException {
     );
   }
 }
+
+export class ItemNotFoundError extends InputException {
+  constructor(problem: string) {
+    super(
+      `Item not found with ID: ${problem}.`,
+      HTTP_STATUS_CODE.BAD_REQUEST
+    );
+  }
+}
