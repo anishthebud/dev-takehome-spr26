@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// ^ disable rules because we are validating anys to make sure it conforms else erroring
 import { RequestStatus } from "../types/request";
 import { Types } from "mongoose";
 

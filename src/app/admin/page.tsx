@@ -2,11 +2,8 @@
 
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
-import Dropdown from "@/components/atoms/Dropdown";
 import { useEffect, useState } from "react";
 import Table from "@/components/tables/Table";
-import mockItemRequests from "../api/mock/data";
-import { getItems } from "@/server/request";
 import { ItemRequest } from "@/lib/types/itemRequest";
 import { RequestStatus } from "@/lib/types/request";
 
@@ -17,17 +14,24 @@ export default function ItemRequestsPage() {
   const [item, setItem] = useState<string>("");
   const [itemList, setItemList] = useState<ItemRequest[]>([]);
 
+  const [page, setPage] = useState<number>(1);
+  const [activeStatus, setActiveStatus] = useState<string>('All');
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+
   useEffect(() => {
     const fetchRequest = async () => {
-      const res = await fetch(`/api/request`);
+      const getStatus = activeStatus.toLowerCase();
+      const res = await fetch(`/api/request?${getStatus === 'all' ? '' : `status=${getStatus}&`}page=${page}`);
       if (!res.ok) {
         console.error(`Failed to load requests: ${res.status}`);
         return;
       }
-      setItemList(await res.json());
+      const response = await res.json();
+      setItemList(response.data);
+      setTotalRecords(response.totalRecords);
     }
     fetchRequest();
-  }, []);
+  }, [page, activeStatus]);
 
   const onStatusChange = async (_id: string, status: RequestStatus) => {
     // Edit the data inside the database
@@ -57,10 +61,10 @@ export default function ItemRequestsPage() {
   */
 
   return (
-    <div className="max-w-md mx-auto mt-8 flex flex-col items-center gap-6">
+    <div className="w-full max-w-4xl mx-auto mt-8 px-4 flex flex-col items-center gap-6">
       <h2 className="font-bold">Approve Items</h2>
 
-      <div className="flex flex-col w-full gap-4">
+      <div className="flex flex-col w-full max-w-md gap-4">
         <Input
           type="text"
           placeholder="Type an item"
@@ -70,9 +74,10 @@ export default function ItemRequestsPage() {
         />
         <Button>Approve</Button>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex w-full min-w-0 flex-col gap-3">
         <h2>Item Requests</h2>
-        <Table requests={itemList} onStatusChange={onStatusChange} />
+        <Table requests={itemList} page={page} activeStatus={activeStatus} totalRecords={totalRecords} 
+          onStatusChange={onStatusChange} onPageChange={setPage} onActiveStatusChange={setActiveStatus} />
       </div>
     </div>
   );

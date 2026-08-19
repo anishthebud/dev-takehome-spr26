@@ -27,9 +27,9 @@ export default function Pill({ status }: PillProps) {
     }
 
     return (
-        <div className={`inline-flex w-fit items-center gap-2 px-3 py-1 rounded-full ${variantStyles[status]}`}>
+        <div className={`inline-flex w-fit items-center gap-1.5 px-2 py-1 rounded-full sm:gap-2 sm:px-3 ${variantStyles[status]}`}>
             <span className={`w-2 h-2 rounded-full shrink-0 ${dotStyles[status]}`} />
-            <p className="font-medium capitalize leading-5">{status}</p>
+            <p className="font-medium capitalize leading-5 whitespace-nowrap">{status}</p>
         </div>
     )
 
