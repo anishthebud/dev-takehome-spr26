@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// ^ disable rules because we are validating anys to make sure it conforms else erroring
 import { RequestStatus } from "@/lib/types/request";
 import dbConnect, { Item } from "./db";
 import { PAGINATION_PAGE_SIZE } from "@/lib/constants/config";
@@ -14,12 +16,18 @@ export async function getItems(status: string | null, page: number) {
     // Get the items
     const offset = PAGINATION_PAGE_SIZE * (page - 1);
     const statusFilter = status ? { status: status } : {}
-    const items = await Item.find(statusFilter)
-        .sort({ createdDate: -1 })
-        .skip(offset)
-        .limit(PAGINATION_PAGE_SIZE)
-        .lean();
-    return items;
+    const [items, totalRecords] = await Promise.all([
+        Item.find(statusFilter)
+            .sort({ createdDate: -1 })
+            .skip(offset)
+            .limit(PAGINATION_PAGE_SIZE)
+            .lean(),
+        Item.countDocuments(statusFilter)
+    ]);
+    return {
+        data: items,
+        totalRecords
+    };
 }
 
 export async function addItem(request: any) {

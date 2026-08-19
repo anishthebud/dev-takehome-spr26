@@ -41,7 +41,7 @@ export async function PUT(request: Request) {
 export async function PATCH(request: Request) {
     try {
         const req = await request.json();
-        const editedItem = editItem(req);
+        const editedItem = await editItem(req);
         return new Response(JSON.stringify(editedItem), {
             status: HTTP_STATUS_CODE.OK,
             headers: { "Content-Type": "application/json" },
