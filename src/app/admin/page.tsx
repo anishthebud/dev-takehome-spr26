@@ -38,7 +38,7 @@ export default function ItemRequestsPage() {
     const res = await fetch(`/api/request`, {
       method: 'PATCH',
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ _id: _id, status: status })
+      body: JSON.stringify({ _id: [_id], status: status })
     })
     if (!res.ok) {
         console.error(`Failed to update request: ${res.status}`);

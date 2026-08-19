@@ -2,7 +2,7 @@ import { HTTP_STATUS_CODE, ResponseType } from "@/lib/types/apiResponse";
 
 import { ServerResponseBuilder } from "@/lib/builders/serverResponseBuilder";
 import { InputException } from "@/lib/errors/inputExceptions";
-import { addItem, editItem, getItems } from "@/server/request";
+import { addItem, deleteItem, editItem, getItems } from "@/server/request";
 
 export async function GET(request: Request) {
     const url = new URL(request.url);
@@ -43,6 +43,22 @@ export async function PATCH(request: Request) {
         const req = await request.json();
         const editedItem = await editItem(req);
         return new Response(JSON.stringify(editedItem), {
+            status: HTTP_STATUS_CODE.OK,
+            headers: { "Content-Type": "application/json" },
+        });
+  } catch (e) {
+    if (e instanceof InputException) {
+      return new ServerResponseBuilder(ResponseType.INVALID_INPUT).build();
+    }
+    return new ServerResponseBuilder(ResponseType.UNKNOWN_ERROR).build();
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+        const req = await request.json();
+        const deletedItem = await deleteItem(req);
+        return new Response(JSON.stringify(deletedItem), {
             status: HTTP_STATUS_CODE.OK,
             headers: { "Content-Type": "application/json" },
         });

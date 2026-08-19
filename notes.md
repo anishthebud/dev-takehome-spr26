@@ -4,7 +4,7 @@
 
 - [X] Read the README [please please please]
 - [ ] Something cool!
-- [ ] Back-end
+- [X] Back-end
   - [X] Minimum Requirements
     - [X] Setup MongoDB database
     - [X] Setup item requests collection
@@ -13,9 +13,9 @@
   - [X] Main Requirements
     - [X] `GET /api/request?status=pending`
     - [X] `PATCH /api/request`
-  - [ ] Above and Beyond
-    - [ ] Batch edits
-    - [ ] Batch deletes
+  - [X] Above and Beyond
+    - [X] Batch edits
+    - [X] Batch deletes
 - [ ] Front-end
   - [X] Minimum Requirements
     - [X] Dropdown component

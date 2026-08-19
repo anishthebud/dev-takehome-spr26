@@ -2,6 +2,7 @@
 // ^ disable rules because we are validating anys to make sure it conforms else erroring
 import { RequestStatus } from "../types/request";
 import { Types } from "mongoose";
+import { MAX_BATCH_SIZE } from "../constants/config";
 
 function isValidString(str: any, lower?: number, upper?: number): boolean {
   if (typeof str !== "string" || str.trim() == "") {
@@ -22,8 +23,14 @@ function isValidPageNumber(page: number) {
     return page > 0;
 }
 
-function isValidId(id: any) {
-    return typeof id == "string" && Types.ObjectId.isValid(id);
+function isValidIds(ids: any) {
+    if (!Array.isArray(ids) || ids.length === 0 || ids.length > MAX_BATCH_SIZE) {
+        return false;
+    }
+    
+    return ids.every(
+        (id: any) => typeof id === "string" && Types.ObjectId.isValid(id)
+    );
 }
 
 export function validateGetItemsRequest(status: string | null, page: number) {
@@ -48,11 +55,15 @@ export function validateAddItemRequest(request: any) {
 }
 
 export function validateEditItemRequest(request: any) {
-    if (!isValidId(request._id)) {
+    if (!isValidIds(request.ids)) {
         return false;
     }
-    if (!isValidStatus(request.status)) {
+    if (request.status === null || !isValidStatus(request.status)) {
         return false;
     }
     return true;
+}
+
+export function validateDeleteItemRequest(request: any) {
+    return isValidIds(request.ids);
 }
