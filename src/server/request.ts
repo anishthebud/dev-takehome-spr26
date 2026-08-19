@@ -55,6 +55,7 @@ export async function editItem(request: any) {
     if (!validateEditItemRequest(request)) {
         throw new InvalidInputError("Edit Item Request");
     }
+    console.log(request.ids);
     // Edit the item
     const updated = await Item.updateMany(
         { _id: { $in: request.ids } },
@@ -64,8 +65,8 @@ export async function editItem(request: any) {
     if (updated.matchedCount === 0) {
         throw new ItemNotFoundError(request.ids.join(", "));
     }
-    // Return the edited item
-    return updated;
+    // Return the edited items themselves so the caller can refresh its view
+    return Item.find({ _id: { $in: request.ids } }).lean();
 }
 
 export async function deleteItem(request: any) {
