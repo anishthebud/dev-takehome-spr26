@@ -4,7 +4,7 @@
 
 - [X] Read the README [please please please]
 - [ ] Something cool!
-- [ ] Back-end
+- [X] Back-end
   - [X] Minimum Requirements
     - [X] Setup MongoDB database
     - [X] Setup item requests collection
@@ -13,9 +13,9 @@
   - [X] Main Requirements
     - [X] `GET /api/request?status=pending`
     - [X] `PATCH /api/request`
-  - [ ] Above and Beyond
-    - [ ] Batch edits
-    - [ ] Batch deletes
+  - [X] Above and Beyond
+    - [X] Batch edits
+    - [X] Batch deletes
 - [ ] Front-end
   - [X] Minimum Requirements
     - [X] Dropdown component
@@ -25,10 +25,12 @@
   - [X] Main Requirements
     - [X] Pagination
     - [X] Tabs
-  - [ ] Above and Beyond
-    - [ ] Batch edits
-    - [ ] Batch deletes
+  - [X] Above and Beyond
+    - [X] Batch edits
+    - [X] Batch deletes
 
 # Notes
 
-<!-- Notes go here -->
+- I created a custom src/server/request.ts page and src/lib/validation/requests.ts page. They both disabled  @typescript-eslint/no-explicit-any rule, becasuse 'any' is needed to validate the proper request, just like in the mock files.
+- I changed the approve items section at the top to allow item requests to be added, using the PUT request designed for the Back-end.
+

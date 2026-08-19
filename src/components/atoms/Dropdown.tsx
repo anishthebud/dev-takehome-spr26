@@ -6,11 +6,13 @@ import { useEffect, useRef, useState } from "react";
 import Pill from "./Pill";
 
 interface DropdownProps {
-  currStatus: RequestStatus;
+  currStatus: RequestStatus | null;
+  placeholder?: string;
+  disabled?: boolean;
   onChange?: (status: RequestStatus) => void;
 }
 
-export default function Dropdown({ currStatus, onChange }: DropdownProps) {
+export default function Dropdown({ currStatus, placeholder = "Status", disabled = false, onChange }: DropdownProps) {
     const [isOpen, setOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +28,10 @@ export default function Dropdown({ currStatus, onChange }: DropdownProps) {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen]);
+
+    useEffect(() => {
+        if (disabled) setOpen(false);
+    }, [disabled]);
 
     const toggleDropdown = () => {
         setOpen(!isOpen);
@@ -43,11 +49,18 @@ export default function Dropdown({ currStatus, onChange }: DropdownProps) {
             <button
                 type="button"
                 className={`flex w-full items-center justify-between gap-1 rounded-lg border bg-white p-1 shadow-sm transition ${
-                    isOpen ? "border-primary ring-1 ring-primary" : "border-gray-stroke hover:bg-[#EFF6FF]"
-                }`}
+                    isOpen ? "border-primary ring-1 ring-primary" : "border-gray-stroke"
+                } ${disabled ? "cursor-not-allowed opacity-50" : "hover:bg-[#EFF6FF]"}`}
                 onClick={toggleDropdown}
+                disabled={disabled}
+                aria-haspopup="listbox"
+                aria-expanded={isOpen}
             >
-                <Pill status={currStatus} />
+                {currStatus ? (
+                    <Pill status={currStatus} />
+                ) : (
+                    <p className="px-2 text-gray-text">{placeholder}</p>
+                )}
                 <span className={`px-1 text-gray-text transition-transform ${isOpen ? "rotate-180" : ""}`}>
                     <ChevronDownIcon />
                 </span>

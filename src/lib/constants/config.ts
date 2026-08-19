@@ -1,1 +1,2 @@
 export const PAGINATION_PAGE_SIZE = 6;
+export const MAX_BATCH_SIZE = PAGINATION_PAGE_SIZE;

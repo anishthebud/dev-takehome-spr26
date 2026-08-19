@@ -8,6 +8,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "lucide-react": "^1.33.0",
     "mongoose": "^9.9.3",
     "next": "15.1.2",
     "react": "^19.0.0",

@@ -3,7 +3,7 @@
 import { RequestStatus } from "@/lib/types/request";
 import dbConnect, { Item } from "./db";
 import { PAGINATION_PAGE_SIZE } from "@/lib/constants/config";
-import { validateAddItemRequest, validateEditItemRequest, validateGetItemsRequest } from "@/lib/validation/requests";
+import { validateAddItemRequest, validateDeleteItemRequest, validateEditItemRequest, validateGetItemsRequest } from "@/lib/validation/requests";
 import { InvalidInputError, ItemNotFoundError } from "@/lib/errors/inputExceptions";
 
 export async function getItems(status: string | null, page: number) {
@@ -47,6 +47,7 @@ export async function addItem(request: any) {
     })
 }
 
+// Works for one element and an array of elements
 export async function editItem(request: any) {
     // Connect to the database
     await dbConnect();
@@ -54,16 +55,35 @@ export async function editItem(request: any) {
     if (!validateEditItemRequest(request)) {
         throw new InvalidInputError("Edit Item Request");
     }
+    console.log(request.ids);
     // Edit the item
-    const updated = await Item.findOneAndUpdate(
-        { _id: request._id },
-        { $set: { status: request.status, lastEditedDate: new Date() } },
-        { new: true }
-    ).lean();
+    const updated = await Item.updateMany(
+        { _id: { $in: request.ids } },
+        { $set: { status: request.status, lastEditedDate: new Date() } }
+    );
     // Check to see if item is actually there
-    if (!updated) {
-        throw new ItemNotFoundError(request.id);
+    if (updated.matchedCount === 0) {
+        throw new ItemNotFoundError(request.ids.join(", "));
     }
-    // Return the edited item
-    return updated;
+    // Return the edited items themselves so the caller can refresh its view
+    return Item.find({ _id: { $in: request.ids } }).lean();
+}
+
+export async function deleteItem(request: any) {
+    // Connect to the database
+    await dbConnect();
+    // Validate deleteItem request
+    if (!validateDeleteItemRequest(request)) {
+        throw new InvalidInputError("Delete Item Request");
+    }
+    // Delete the items
+    const deleted = await Item.deleteMany(
+        { _id: { $in: request.ids } }
+    );
+    // Check to see if item is actually there
+    if (deleted.deletedCount === 0) {
+        throw new ItemNotFoundError(request.ids.join(", "));
+    }
+    // Return the deleted object
+    return deleted;
 }
